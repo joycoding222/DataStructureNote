@@ -127,13 +127,13 @@ void inOrederThreading(ThreadTree *head, ThreadTree T, ThreadNode * &prev)
 }
 
 // 基于线索遍历
-void inOrder(ThreadNode *T)
+void inOrder(ThreadNode *head)
 {
-    // T 是头指针
-    ThreadNode *curr = T;
-    curr = T->leftchild; // 找到根结点
+    // head 是头指针
+    ThreadNode *curr = head;
+    curr = head->leftchild; // 找到根结点
 
-    while (curr != T)
+    while (curr != head)
     {
         // 如果有左孩子，一直向下挖
         while (curr->Ltag == 0)
@@ -143,11 +143,12 @@ void inOrder(ThreadNode *T)
         cout << curr->data << " ";
 
         // 根据线索转到后继
-        while (curr->Rtag == 1 && curr->rightchild != T)
+        while (curr->Rtag == 1 && curr->rightchild != head)
         {
             curr = curr->rightchild;
             cout << curr->data << " ";
         }
+        // 转向右子树
         curr = curr->rightchild;
     }
     cout << endl;    
