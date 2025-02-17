@@ -1,5 +1,6 @@
 /*
-图的最小生成树 Minimum Spanning Tree
+图的最小生成树 Minimum Spanning Tree:
+Prime 算法、 Kruskal 算法
 */
 #include <iostream>
 #include <climits> // 使用 INT_MAX 表示无穷
@@ -17,6 +18,12 @@ struct Matrix_Graph
     EdgeType arc[MAXSIZE][MAXSIZE]; // 保存边
     int vertex_num;
     int edge_num;
+};
+
+struct Edge{
+    int begin;
+    int end;
+    int weight;
 };
 
 // 记录被访问过的顶点
@@ -81,16 +88,18 @@ void create_graph(Matrix_Graph *G)
 // Prime 最小生成树
 void Prime(Matrix_Graph *G)
 {
-    int weight[MAXSIZE]; // 候选边，0表示已经访问过，非0表示候选边的权值
+    int weight[MAXSIZE]; // 候选边，0表示该结点已经加入生成树，非0表示候选边的权值
     int parent[MAXSIZE]; // 值表示出发点，下标表示到达点
 
-    // 寻找结点0的路径
+    // 初始化所有顶点到起点 A 的权值和父节点
     for (int i = 0; i < G->vertex_num; i++)
     {
         // 把出发点所有路径的权重放入候选中
         weight[i] = G->arc[0][i]; // weight 等于0表示已经加入生成树
-        parent[i] = 0;            // 记录每个顶点是由哪个父节点加入生成树的
+        parent[i] = 0;            // 记录每个顶点是由哪个父节点加入生成树的，暂时将所有结点的父节点初始化为A
     }
+
+    weight[0] = 0; // 结点 A 已加入最小生成树
 
     for (int i = 1; i < G->vertex_num; i++) // 生成n-1条边
     {
@@ -113,17 +122,109 @@ void Prime(Matrix_Graph *G)
 
         weight[current] = 0; // 表示 current 已加入生成树
 
-        // 找到新的结点并连接
+        // 更新邻接结点的权值和父节点
         for (j = 0; j < G->vertex_num; j++)
         {
             if (weight[j] != 0 && G->arc[current][j] < weight[j])
             {
-                weight[j] = G->arc[current][j]; // 加入新的候选
-                parent[j] = current;            // 更新父节点
+                weight[j] = G->arc[current][j]; // 更新更小的权值
+                parent[j] = current;            // 更新父节点为 current
             }
         }
     }
     cout << endl;
+}
+
+// 交换权值不同的两条边
+void swap(Edge* edge, int i, int j)
+{
+    Edge temp = edge[i];
+    edge[i] = edge[j];
+    edge[j] = temp;
+}
+
+// 边的权值升序排序
+void sortEdge(Edge* edge, int edge_num)
+{
+    for (int i = 0; i < edge_num; i++)
+    {
+        for (int j = i+1; j < edge_num; j++)
+        {
+            if (edge[i].weight > edge[j].weight)
+            {
+                swap(edge, i, j);
+            }
+        }
+    }
+}
+
+// find 查找根结点
+int find(int* parent, int i)
+{
+    // deepseek 修改后：
+    if (parent[i] < 0)
+    {
+        return i;
+    }
+    return parent[i] = find(parent, parent[i]);
+    // 课程中：
+    // while ( parent[i] > 0)
+    // {
+    //     i = parent[i];
+    // }
+    // return i;    
+}
+
+// Kruskal 最小生成树
+void Kruskal(Matrix_Graph G)
+{
+    Edge edge[G.edge_num]; // 保存图的所有边
+    int k = 0; // edge 的索引
+
+    // 初始化图的边构成的数组（仅邻接矩阵的上三角部分）
+    for(int i = 0; i < G.vertex_num; i++)
+    {
+        for (int j = i+1; j < G.vertex_num; j++)
+        {
+            if (G.arc[i][j] < INT_MAX)
+            {
+                edge[k].weight = G.arc[i][j];
+                edge[k].begin = i;
+                edge[k].end = j;
+                k++;
+            }
+        }
+    }
+
+    // 边的权值升序排序
+    sortEdge(edge, G.edge_num);
+    
+    for (int i = 0; i < G.edge_num; i++)
+    {
+        cout << G.vertex[edge[i].begin] << G.vertex[edge[i].end] << " " << edge[i].weight << endl;
+    }
+
+    // 初始化结点的父节点
+    int parent[MAXSIZE];
+    for (int i = 0; i < G.vertex_num; i++)
+    {
+        parent[i] = -1;
+    }
+
+    // 生成树
+    int root_begin, root_end;
+    for (int i = 0; i < G.edge_num; i++)    // 生成n条边
+    {
+        /* 实际上最小生成树只需要G.vertex_num-1条边，因此可以声明变量edge_count，提前终止循环*/
+        root_begin = find(parent, edge[i].begin);
+        root_end = find(parent, edge[i].end);
+
+        if (root_begin != root_end)
+        {
+            cout << G.vertex[edge[i].begin] << G.vertex[edge[i].end] << " ";
+            parent[root_begin] = root_end;
+        }
+    }
 }
 
 int main(int argc, char *argv[])
@@ -133,6 +234,7 @@ int main(int argc, char *argv[])
 
     Prime(&G);
 
-    cout << INT_MAX << endl;
+    Kruskal(G);
+
     return 0;
 }
