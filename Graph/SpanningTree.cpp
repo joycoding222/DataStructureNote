@@ -89,7 +89,7 @@ void create_graph(Matrix_Graph *G)
 void Prime(Matrix_Graph *G)
 {
     int weight[MAXSIZE]; // 候选边，0表示该结点已经加入生成树，非0表示候选边的权值
-    int parent[MAXSIZE]; // 值表示出发点，下标表示到达点
+    int parent[MAXSIZE]; // 下标index表示子节点，parent[index]表示父节点
 
     // 初始化所有顶点到起点 A 的权值和父节点
     for (int i = 0; i < G->vertex_num; i++)
@@ -101,7 +101,7 @@ void Prime(Matrix_Graph *G)
 
     weight[0] = 0; // 结点 A 已加入最小生成树
 
-    for (int i = 1; i < G->vertex_num; i++) // 生成n-1条边
+    for (int i = 1; i < G->vertex_num; i++) // 生成n-1条边，n即图中顶点的数量
     {
         int min = INT_MAX;
         int j = 0;
@@ -133,6 +133,13 @@ void Prime(Matrix_Graph *G)
         }
     }
     cout << endl;
+    /*
+    Prime 算法总结：
+    1.weight数组表示当前可供选择的结点，0表示已加入生成树，INT_MAX表示与生成树中的结点无连线，
+    其余数值表示权重；
+    2.parent数组记录结点之间的连线:parent[index]表示父节点，Index表示子节点；
+    3.循环条件：生成树的n-1条边；
+    */
 }
 
 // 交换权值不同的两条边
@@ -219,12 +226,19 @@ void Kruskal(Matrix_Graph G)
         root_begin = find(parent, edge[i].begin);
         root_end = find(parent, edge[i].end);
 
-        if (root_begin != root_end)
+        if (root_begin != root_end) // 保证无环路
         {
             cout << G.vertex[edge[i].begin] << G.vertex[edge[i].end] << " ";
             parent[root_begin] = root_end;
         }
     }
+    /*
+    Kruskal 算法总结：
+    1.和 Prime 不同，Kruskal 根据边的权值大小进行排序，将权重从小到大的边依次加入生成树；
+    2.parent[index]表示父节点，index 表示子节点；但与 Prime 不同，在寻找 index 父节点时可能出现
+    parent[index] 已经保存了其他结点的情况，此时需要令 index = parent[index] 继续寻找更上一层的
+    父节点；
+    */
 }
 
 int main(int argc, char *argv[])

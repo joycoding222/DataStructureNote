@@ -1,5 +1,6 @@
 /*
 图的深度优先遍历：DFS
+图的广度优先遍历：BFS
 */
 #include <iostream>
 
