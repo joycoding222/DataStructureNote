@@ -5,6 +5,7 @@
 3.重复步骤1；
 */
 #include <iostream>
+#include <climits> // INT_MAX 表示无穷
 
 using namespace std;
 
@@ -26,6 +27,7 @@ struct Matrix_Graph
 struct edgeNode{
     int edge_vex;
     edgeNode *next;
+    int weight; // 权重(关键路径only)
 };
 
 // 邻接表每个表的表头
@@ -147,7 +149,7 @@ void create_adj_graph(Matrix_Graph G, Adj_List_Graph *ALG) // ALG:邻接表指�
     for (int i = 0; i < G.vertex_num; i++)
     {
         (*ALG)->adj_list[i].in = 0;
-        (*ALG)->adj_list[i].data = i;
+        (*ALG)->adj_list[i].data = G.vertex[i];
         (*ALG)->adj_list[i].head = NULL;
     }
 
