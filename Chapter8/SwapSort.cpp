@@ -4,6 +4,7 @@
 第m趟需要比较的次数j=n-m;
 快速排序：首先任意选取一个元素作为中心（如第一个元素），比中心元素小的数据放在他前面，比中心元素大的数据
 放在他后面，得到左右两个子表；对子表重新选择中心，并依次调整；直到每个子表只剩一个元素；
+快速排序不适用于有序序列或基本有序序列，会退化为冒泡排序；
 */
 
 #include <iostream>
@@ -25,6 +26,8 @@ typedef struct
     int length;
     RedType r[MaxSize + 1]; // r[0]一般做哨兵或缓冲区
 } SqList;
+
+void output(SqList &L);
 
 // 冒泡排序
 void BubbleSort(SqList &L)
@@ -102,6 +105,8 @@ void QuickSort(SqList &L, int low, int high)
     if (low < high)
     {
         int pivot = Partition(L, low, high); // 查找pivot在数组中的下标
+        cout << "Pivot: " << L.r[pivot].key << ",   ";
+        output(L);
         QuickSort(L, low, pivot - 1);        // 前半段排序
         QuickSort(L, pivot + 1, high);       // 后半段排序
     }
@@ -135,6 +140,13 @@ int main(int argc, char *argv[])
     L.r[11].key = 41;
     L.r[12].key = 75;
     L.r[13].key = 15;
+    // L.length = 6;
+    // L.r[1].key = 90;
+    // L.r[2].key = 85;
+    // L.r[3].key = 79;
+    // L.r[4].key = 68;
+    // L.r[5].key = 50;
+    // L.r[6].key = 46;
 
     output(L);
 
